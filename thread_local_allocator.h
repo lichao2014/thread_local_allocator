@@ -6,22 +6,22 @@
 #include "object_manager.h"
 #include "memory_pool.h"
 
-class IObjectPool
+class IThreadLocalObjectPool
 {
 public:
-    virtual ~IObjectPool() = default;
+    virtual ~IThreadLocalObjectPool() = default;
     virtual void release() = 0;
 
     static void release_all()
     {
-        ObjectManager<IObjectPool>::get_instance().visit(
-            [](IObjectPool& i) { i.release(); }
+        ObjectManager<IThreadLocalObjectPool>::get_instance().visit(
+            [](IThreadLocalObjectPool& i) { i.release(); }
         );
     }
 };
 
 template<typename T>
-class ThreadLocalObjectPool : public ObjectVisitor<IObjectPool>
+class ThreadLocalObjectPool : public ObjectVisitor<IThreadLocalObjectPool>
                             , public Singleton<ThreadLocalObjectPool<T>, true>
 {
 public:
